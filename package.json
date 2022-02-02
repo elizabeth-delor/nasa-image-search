@@ -17,6 +17,7 @@
     "storybook:build": "npm run analyze -- --exclude dist && build-storybook"
   },
   "dependencies": {
+    "@lrnwebcomponents/accent-card": "^4.0.6",
     "lit": "^2.0.2"
   },
   "devDependencies": {
