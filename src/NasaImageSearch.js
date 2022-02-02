@@ -29,7 +29,9 @@ export class NasaImageSearch extends LitElement {
   }
 
   async getNASAData() {
-    return fetch('https://images-api.nasa.gov/search?q=moon&page=1')
+    return fetch(
+      'https://images-api.nasa.gov/search?q=rocket&page=1&media_type=image'
+    )
       .then(resp => {
         if (resp.ok) {
           return resp.json();
@@ -65,7 +67,10 @@ export class NasaImageSearch extends LitElement {
     return html`
       ${this.nasaResults.map(
         item => html`
-          <accent-card imagesrc="${item.imagesrc}">
+          <accent-card
+            imagesrc="${new URL(item.imagesrc, import.meta.url).href}"
+            image-align="left"
+          >
             <div slot="heading">${item.title}</div>
             <div slot="content">${item.description}</div>
           </accent-card>
