@@ -29,7 +29,7 @@ export class NasaImageSearch extends LitElement {
   }
 
   async getNASAData() {
-    return fetch('https://images-api.nasa.gov/search?q=rocket&page=1')
+    return fetch('https://images-api.nasa.gov/search?q=moon&page=1')
       .then(resp => {
         if (resp.ok) {
           return resp.json();
@@ -41,13 +41,16 @@ export class NasaImageSearch extends LitElement {
         this.nasaResults = [];
 
         data.collection.items.forEach(element => {
-          const moonInfo = {
-            imagesrc: new URL(element.links[0].href, import.meta.url).href,
-            title: element.data[0].title,
-            description: element.data[0].description,
-          };
-          console.log(moonInfo);
-          this.nasaResults.push(moonInfo);
+          // Not every item has a links array field
+          if (element.links[0].href !== undefined) {
+            const moonInfo = {
+              imagesrc: element.links[0].href,
+              title: element.data[0].title,
+              description: element.data[0].description,
+            };
+            console.log(moonInfo);
+            this.nasaResults.push(moonInfo);
+          }
         });
         return data;
       });
