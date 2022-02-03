@@ -59,6 +59,14 @@ export class NasaImageSearch extends LitElement {
       });
   }
 
+  static getDataOnly() {
+    if (document.getElementById('dataOnly').checked) {
+      // not empty
+    } else {
+      // not empty
+    }
+  }
+
   constructor() {
     super();
     this.nasaResults = [];
@@ -66,6 +74,17 @@ export class NasaImageSearch extends LitElement {
 
   render() {
     return html`
+      <div>
+        <input
+          type="checkbox"
+          id="dataOnly"
+          name="dataOnly"
+          onCheck="getDataOnly();"
+          unchecked
+        />
+        <label for="dataOnly">Data Only</label>
+      </div>
+      <br />
       ${this.nasaResults.map(
         item => html`
           <accent-card
