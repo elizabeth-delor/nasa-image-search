@@ -1,4 +1,5 @@
 import { html, css, LitElement } from 'lit';
+import '@lrnwebcomponents/accent-card';
 
 export class NasaImageSearch extends LitElement {
   static get tag() {
@@ -29,7 +30,9 @@ export class NasaImageSearch extends LitElement {
   }
 
   async getNASAData() {
-    return fetch('https://images-api.nasa.gov/search?q=moon&page=1')
+    return fetch(
+      'https://images-api.nasa.gov/search?q=moon&page=1&media_type=image'
+    )
       .then(resp => {
         if (resp.ok) {
           return resp.json();
@@ -65,7 +68,11 @@ export class NasaImageSearch extends LitElement {
     return html`
       ${this.nasaResults.map(
         item => html`
-          <accent-card imagesrc="${item.imagesrc}">
+          <accent-card
+            image-src="${item.imagesrc}"
+            image-align="right"
+            horizontal
+          >
             <div slot="heading">${item.title}</div>
             <div slot="content">${item.description}</div>
           </accent-card>
