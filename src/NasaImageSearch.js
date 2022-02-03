@@ -68,14 +68,15 @@ export class NasaImageSearch extends LitElement {
     return html`
       ${this.nasaResults.map(
         item => html`
-          <br />
-          <accent-card imagesrc="${item.imagesrc}">
+          <accent-card
+            image-src="${item.imagesrc}"
+            image-align="right"
+            horizontal
+          >
             <div slot="heading">${item.title}</div>
             <div slot="content">${item.description}</div>
             <div slot="secondary_creator">${item.creator}</div>
           </accent-card>
-          <button>Search</button>
-          <br />
         `
       )}
     `;
