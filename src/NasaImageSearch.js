@@ -1,4 +1,6 @@
 import { html, css, LitElement } from 'lit';
+// eslint-disable-next-line no-unused-vars
+import { AccentCard } from '@lrnwebcomponents/accent-card';
 
 export class NasaImageSearch extends LitElement {
   static get tag() {
@@ -15,6 +17,13 @@ export class NasaImageSearch extends LitElement {
     `;
   }
 
+  constructor() {
+    super();
+    this.nasaResults = [];
+    this.nasaEndpoint =
+      'https://images-api.nasa.gov/search?q=rocket&page=1&media_type=image';
+  }
+
   static get properties() {
     return {
       nasaResults: { type: Array },
@@ -25,50 +34,49 @@ export class NasaImageSearch extends LitElement {
     if (super.firstUpdated) {
       super.firstUpdated(changedProperties);
     }
+    console.log('something changed');
     this.getNASAData();
   }
 
   async getNASAData() {
-    return fetch(
-      'https://images-api.nasa.gov/search?q=rocket&page=1&media_type=image'
-    )
+    return fetch(this.nasaEndpoint)
       .then(resp => {
+        console.log(resp);
         if (resp.ok) {
           return resp.json();
         }
         return false;
       })
       .then(data => {
+        console.log('ok');
         console.log(data);
         this.nasaResults = [];
 
         data.collection.items.forEach(element => {
           // Not every item has a links array field
+          console.log(element.links[0].href);
           if (element.links[0].href !== undefined) {
             const moonInfo = {
               imagesrc: element.links[0].href,
               title: element.data[0].title,
               description: element.data[0].description,
             };
-            console.log(moonInfo);
+            console.log(`Moon Info: ${moonInfo.imagesrc}`);
             this.nasaResults.push(moonInfo);
           }
         });
+        console.log(this.nasaResults);
         return data;
       });
   }
 
-  constructor() {
-    super();
-    this.nasaResults = [];
-  }
-
   render() {
+    // I repaired the index.html shit but the problem is with the accent-card tag, it's not rendering properly despite other things (img, p, etc.) doing fine.
     return html`
       ${this.nasaResults.map(
         item => html`
           <accent-card
-            imagesrc="${new URL(item.imagesrc, import.meta.url).href}"
+            image-src="${new URL(item.imagesrc, import.meta.url).href}"
             image-align="left"
           >
             <div slot="heading">${item.title}</div>
