@@ -66,7 +66,6 @@ export class NasaImageSearch extends LitElement {
         this.nasaResults = [];
 
         data.collection.items.forEach(element => {
-          // Not every item has a links array field
           if (element.links[0].href !== undefined) {
             const moonInfo = {
               imagesrc: element.links[0].href,
