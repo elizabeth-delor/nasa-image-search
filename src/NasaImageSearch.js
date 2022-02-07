@@ -62,6 +62,9 @@ export class NasaImageSearch extends LitElement {
   static getDataOnly() {
     if (document.getElementById('dataOnly').checked) {
       // not empty
+      console.log('were here');
+      const cards = document.getElementById('cards');
+      cards.parentNode.removeChild(cards);
     } else {
       // not empty
     }
@@ -91,6 +94,7 @@ export class NasaImageSearch extends LitElement {
             image-src="${item.imagesrc}"
             image-align="right"
             horizontal
+            id="cards"
           >
             <div slot="heading">${item.title}</div>
             <div slot="content">${item.description}</div>
