@@ -91,7 +91,7 @@ export class NasaImageSearch extends LitElement {
     this.loadData = false;
     this.view = 'accent-card';
   }
-  // this is purely so my vscode stops being dumb
+  // this is purely so my vscode will push to github
 
   render() {
     return html`
