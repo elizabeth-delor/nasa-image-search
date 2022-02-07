@@ -80,21 +80,12 @@ export class NasaImageSearch extends LitElement {
       });
   }
 
-  static getDataOnly() {
-    if (document.getElementById('dataOnly').checked) {
-      // not empty
-      console.log('were here');
-      const cards = document.getElementById('cards');
-      cards.parentNode.removeChild(cards);
-    } else {
-      // not empty
-      // make sure render function gets called again
-    }
-  }
-
   resetData() {
     this.nasaResults = [];
     this.loadData = false;
+    console.log('were here');
+    const cards = document.getElementById('cards');
+    cards.parentNode.removeChild(cards);
   }
 
   constructor() {
@@ -118,27 +109,11 @@ export class NasaImageSearch extends LitElement {
                 `
               )}
             </ul>
-            <div>
-              <input
-                type="checkbox"
-                id="dataOnly"
-                name="dataOnly"
-                onCheck="getDataOnly();"
-                unchecked
-              />
-              <label for="dataOnly">Data Only</label>
-            </div>
-            <br />
           `
         : html`
             ${this.nasaResults.map(
               item => html`
-                <accent-card
-                  image-src="${item.imagesrc}"
-                  image-align="right"
-                  horizontal
-                  id="cards"
-                >
+                <accent-card image-src="${item.imagesrc}" image-align="right">
                   <div slot="heading">${item.title}</div>
                   <div slot="content">${item.description}</div>
                   <div slot="secondary_creator">${item.creator}</div>
