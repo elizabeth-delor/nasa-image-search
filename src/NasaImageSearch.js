@@ -13,12 +13,18 @@ export class NasaImageSearch extends LitElement {
         padding: 25px;
         color: var(--nasa-image-search-text-color, #000);
       }
+
+      :host([view='list']) ul {
+        margin: 20px;
+      }
     `;
   }
 
   static get properties() {
     return {
       nasaResults: { type: Array },
+      loadData: { type: Boolean, reflect: true, attribute: 'load' },
+      view: { type: String, reflect: true },
     };
   }
 
@@ -27,6 +33,22 @@ export class NasaImageSearch extends LitElement {
       super.firstUpdated(changedProperties);
     }
     this.getNASAData();
+  }
+
+  updated(changedProperties) {
+    changedProperties.forEach((oldValue, propName) => {
+      if (propName === 'loadData' && this[propName]) {
+        this.getNASAData();
+      } else if (propName === 'nasaResults') {
+        this.dispatchEvent(
+          new CustomEvent('results-changed', {
+            detail: {
+              value: this.nasaResults,
+            },
+          })
+        );
+      }
+    });
   }
 
   async getNASAData() {
@@ -44,7 +66,6 @@ export class NasaImageSearch extends LitElement {
         this.nasaResults = [];
 
         data.collection.items.forEach(element => {
-          // Not every item has a links array field
           if (element.links[0].href !== undefined) {
             const moonInfo = {
               imagesrc: element.links[0].href,
@@ -59,25 +80,47 @@ export class NasaImageSearch extends LitElement {
       });
   }
 
+  resetData() {
+    this.nasaResults = [];
+    this.loadData = false;
+  }
+
   constructor() {
     super();
     this.nasaResults = [];
+    this.loadData = false;
+    this.view = 'accent-card';
   }
+  // this is purely so my vscode will push to github
 
   render() {
     return html`
-      ${this.nasaResults.map(
-        item => html`
-          <accent-card
-            image-src="${item.imagesrc}"
-            image-align="right"
-            horizontal
-          >
-            <div slot="heading">${item.title}</div>
-            <div slot="content">${item.description}</div>
-          </accent-card>
-        `
-      )}
+      ${this.view === `list`
+        ? html`
+            <ul>
+              ${this.nasaResults.map(
+                item => html`
+                  <li>
+                    ${item.imagesrc} - ${item.title} - ${item.description}
+                  </li>
+                `
+              )}
+            </ul>
+          `
+        : html`
+            ${this.nasaResults.map(
+              item => html`
+                <accent-card
+                  image-src="${item.imagesrc}"
+                  image-align="right"
+                  horizontal
+                >
+                  <div slot="heading">${item.title}</div>
+                  <div slot="content">${item.description}</div>
+                </accent-card>
+              `
+            )}
+          `}
     `;
   }
 }
