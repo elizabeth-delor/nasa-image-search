@@ -130,7 +130,7 @@ export class NasaImageSearch extends LitElement {
 
       <div class="center">
         <button class="button1" @click=${this.clearFields}>Reset</button>
-        <input type="text" id="searchTerm" autofocus></input>
+        <input type="text" id="searchTerm" autofocus title="search"></input>
         <button class="button2" @click=${this.updateSearchTerm}>Search!</button>
       </div>
       <br><br>
