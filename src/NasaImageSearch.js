@@ -27,6 +27,7 @@ export class NasaImageSearch extends LitElement {
         margin-left: 0;
         margin-right: 0;
         font-weight: bold;
+        padding-top: 10px;
       }
 
       .button1 {
