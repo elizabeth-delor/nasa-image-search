@@ -2,6 +2,8 @@
 import { html, css, LitElement } from 'lit';
 import '@lrnwebcomponents/accent-card';
 
+// TODO: Connect startYear & endYear logic to html elements and then to api call
+// TODO: Fix photographer/secondary_creator setup
 export class NasaImageSearch extends LitElement {
   static get styles() {
     return css`
@@ -74,6 +76,10 @@ export class NasaImageSearch extends LitElement {
         align-items: center;
         height: 40px;
       }
+
+      .photoCredit {
+        font-style: italic;
+      }
     `;
   }
 
@@ -81,13 +87,21 @@ export class NasaImageSearch extends LitElement {
     return {
       searchTerm: { type: String, reflect: true },
       images: { type: Array },
+      apiURL: { type: String },
+      page: { type: String, reflect: true },
+      startYear: { type: String },
+      endYear: { type: String },
     };
   }
 
   constructor() {
     super();
     this.images = [];
+    this.apiURL = 'https://images-api.nasa.gov/search?media_type=image';
     this.searchTerm = '';
+    this.page = '1';
+    this.startYear = '1000';
+    this.endYear = '2022';
   }
 
   updated(changedProperties) {
@@ -109,13 +123,21 @@ export class NasaImageSearch extends LitElement {
   }
 
   getData() {
-    const apiURL = 'https://images-api.nasa.gov/search?media_type=image&q=';
-    fetch(apiURL + this.searchTerm)
+    fetch(`${this.apiURL}&q=${this.searchTerm}&page=${this.page}`)
       .then(response => response.json())
       .then(data => {
         this.images = [];
         const imageCollection = new Array(data.collection.items);
         for (let i = 0; i < imageCollection[0].length; i += 1) {
+          // next three lines take photographer info from secondary_creator and photographer fields and put into one uniform variable
+          let photographerInfo = imageCollection[0][i].data[0].secondary_creator
+            ? imageCollection[0][i].data[0].secondary_creator
+            : 'unknown';
+          photographerInfo = imageCollection[0][i].data[0].photographer
+            ? imageCollection[0][i].data[0].photographer
+            : photographerInfo;
+          imageCollection[0][i].data[0].photographerInfo = photographerInfo;
+
           this.images.push(imageCollection[0][i]);
         }
       });
@@ -123,6 +145,21 @@ export class NasaImageSearch extends LitElement {
 
   updateSearchTerm() {
     this.searchTerm = this.shadowRoot.querySelector('#searchTerm').value;
+  }
+
+  updateStartYear() {
+    console.log(this.startYear);
+    // let newStart = this.shadowRoot.querySelector('#startYear').value;
+    // conditional that checks newStart > 1000
+    // this.startYear = newStart
+  }
+
+  updateEndYear() {
+    // conditional that checks shadowRoot for value > 1899
+    console.log(this.endYear);
+    // let newEnd = this.shadowRoot.querySelector('#endYear').value;
+    // conditional that checks newEnd > 1000
+    // this.startYear = newEnd
   }
 
   clearFields() {
@@ -161,7 +198,13 @@ export class NasaImageSearch extends LitElement {
               style="max-width:300%;"
             >
               <div slot="heading">${item.data[0].title}</div>
-              <div slot="content">${item.data[0].description}</div>
+              <div slot="content">
+                ${item.data[0].description}
+                <br />
+                <p class="photoCredit">
+                  Photographed by: ${item.data[0].photographerInfo}
+                </p>
+              </div>
             </accent-card>
           </a>
         `
