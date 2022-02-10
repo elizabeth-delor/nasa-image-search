@@ -64,7 +64,7 @@ export class NasaImageSearch extends LitElement {
       }
 
       input[type='number'] {
-        width: 55px;
+        width: 70px;
         padding: 8px 20px 3px;
         margin: 20px 8px;
         display: inline-block;
@@ -119,6 +119,8 @@ export class NasaImageSearch extends LitElement {
     this.t = {
       pageNumber: 'Pages',
       searchBox: 'Search... (ex. Moon, Stars...)',
+      yearStart: 'Start Year',
+      yearFinish: 'End Year',
     };
   }
 
@@ -169,26 +171,53 @@ export class NasaImageSearch extends LitElement {
       <h2 style="text-align:center">NASA Search!</h2>
 
       <div class="center">
-        <button class="button1" @click=${this.clearFields}>Reset</button>
+        <button 
+          class="button1" 
+          @click=${this.clearFields}> Reset
+        </button>
+        
         <input 
           type="text" 
           id="searchTerm" 
           .placeholder="${this.t.searchBox}"
           autofocus>
         </input>
-        <button class="button2" @click=${this.updateSearchTerm}>Search!</button>
+
+        <button 
+          class="button2" 
+          @click=${this.updateSearchTerm} 
+          aria-label="Search button" > Search!
+        </button>
       </div>
 
       <div class="center">
           <input 
             type="number" 
-            id="searchTerm"
-            .placeholder="${this.t.pageNumber}"></input>
-        <!-- <button class="forward"> </button> -->
+            id="yearBox"
+            .placeholder="${this.t.yearStart}"
+            title="number"
+            aria-label="Enter Starting Year"> -
+          </input>
 
-        <button class="accentcard"> Card View </button>
-        <button class="list"> List View </button>
+          <input 
+            type="number" 
+            id="yearBox"
+            .placeholder="${this.t.yearFinish}"
+            title="number"
+            aria-label="Enter Ending Year">
+          </input>
+
+        <button class="accentcard" aria-label="Switch to Card View"> Card View </button>
+        <button class="list" aria-label="Switch to List View"> List View </button>
       </div>
+
+    <div class="center">
+      <input 
+          type="number" 
+          id="pageBox"
+          .placeholder="${this.t.pageNumber}">
+      </input>
+    </div>
 
       <br><br>
       ${this.images.map(
