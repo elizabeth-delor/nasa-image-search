@@ -27,6 +27,7 @@ export class NasaImageSearch extends LitElement {
         margin-left: 0;
         margin-right: 0;
         font-weight: bold;
+        padding-top: 10px;
       }
 
       .button1 {
@@ -57,6 +58,13 @@ export class NasaImageSearch extends LitElement {
         width: 30%;
         padding: 8px 20px;
         margin: 8px 0;
+        display: inline-block;
+      }
+
+      input[type='number'] {
+        width: 10%;
+        padding: 8px 20px;
+        margin: 18px 0;
         display: inline-block;
       }
 
@@ -133,6 +141,15 @@ export class NasaImageSearch extends LitElement {
         <input type="text" id="searchTerm" autofocus title="search"></input>
         <button class="button2" @click=${this.updateSearchTerm}>Search!</button>
       </div>
+
+      <div class="center">
+          <input type="number" id="searchTerm"></input>
+        <!-- <button class="forward"> </button> -->
+
+        <button class="accentcard"> </button>
+        <button class="list"> </button>
+      </div>
+
       <br><br>
       ${this.images.map(
         item => html`
