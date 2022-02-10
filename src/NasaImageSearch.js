@@ -128,6 +128,7 @@ export class NasaImageSearch extends LitElement {
   clearFields() {
     this.shadowRoot.querySelector('#searchTerm').value = '';
     this.images = [];
+    this.searchTerm = '';
   }
 
   render() {
