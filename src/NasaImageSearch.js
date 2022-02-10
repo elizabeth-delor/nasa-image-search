@@ -132,8 +132,9 @@ export class NasaImageSearch extends LitElement {
 
   render() {
     const detailsURL = 'https://images.nasa.gov/details-';
+    const imageURL = new URL('../assets/favicon-192.png', import.meta.url).href;
     return html`
-      <img src="../assets/favicon-192.png" alt="nasa logo" style="width:128px;height:128px;">
+      <img src="${imageURL}" alt="nasa logo" style="width:128px;height:128px;">
       <h2 style="text-align:center">NASA Search!</h2>
 
       <div class="center">
