@@ -14,7 +14,8 @@
     "test": "web-test-runner --coverage",
     "test:watch": "web-test-runner --watch",
     "storybook": "npm run analyze -- --exclude dist && web-dev-server -c .storybook/server.mjs",
-    "storybook:build": "npm run analyze -- --exclude dist && build-storybook"
+    "storybook:build": "npm run analyze -- --exclude dist && build-storybook",
+    "build": "rimraf dist && rollup -c rollup.config.js && npm run analyze -- --exclude dist"
   },
   "dependencies": {
     "@lrnwebcomponents/accent-card": "^4.0.6",
@@ -24,14 +25,26 @@
     "@custom-elements-manifest/analyzer": "^0.4.17",
     "@open-wc/eslint-config": "^4.3.0",
     "@open-wc/testing": "next",
-    "@web/dev-server": "^0.1.28",
-    "@web/dev-server-storybook": "next",
-    "@web/test-runner": "^0.13.22",
+    "@web/dev-server": "^0.1.24",
+    "@web/dev-server-storybook": "^0.0.2",
+    "@rollup/plugin-babel": "^5.3.0",
+    "@rollup/plugin-node-resolve": "^13.0.5",
+    "@web/rollup-plugin-html": "^1.10.1",
+    "@web/rollup-plugin-import-meta-assets": "^1.0.7",
+    "@web/test-runner": "^0.13.18",
+    "babel-plugin-template-html-minifier": "^4.1.0",
+    "deepmerge": "^4.2.2",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "husky": "^4.3.8",
     "lint-staged": "^10.5.4",
-    "prettier": "^2.4.1"
+    "patch-package": "6.4.7",
+    "prettier": "^2.4.1",
+    "rimraf": "^3.0.2",
+    "rollup": "^2.58.0",
+    "rollup-plugin-terser": "^7.0.2",
+    "rollup-plugin-workbox": "^6.2.0",
+    "web-animations-js": "2.3.2"
   },
   "customElements": "custom-elements.json",
   "eslintConfig": {
