@@ -32,6 +32,7 @@ export class NasaImageSearch extends LitElement {
 
       .button1 {
         border: none;
+        border-radius: 3px 0px 0px 3px;
         background-color: #ff7376;
         color: black;
         padding: 10px 22px;
@@ -44,6 +45,7 @@ export class NasaImageSearch extends LitElement {
 
       .button2 {
         border: none;
+        border-radius: 0px 3px 3px 0px;
         background-color: #ff7376;
         color: black;
         padding: 10px 22px;
@@ -62,10 +64,36 @@ export class NasaImageSearch extends LitElement {
       }
 
       input[type='number'] {
-        width: 10%;
-        padding: 8px 20px;
-        margin: 18px 0;
+        width: 70px;
+        padding: 8px 20px 3px;
+        margin: 20px 8px;
         display: inline-block;
+      }
+
+      .accentcard {
+        display: inline-block;
+        background-color: #ff7376;
+        border: none;
+        border-radius: 3px;
+        padding: 8px 20px;
+        margin: 20px 2px;
+        height: 30.5px;
+
+        font-size: 10px;
+        cursor: pointer;
+      }
+
+      .list {
+        display: inline-block;
+        background-color: #ff7376;
+        border: none;
+        border-radius: 3px;
+        padding: 8px 20px;
+        margin: 20px 0px;
+        height: 30.5px;
+
+        font-size: 10px;
+        cursor: pointer;
       }
 
       .center {
@@ -88,6 +116,12 @@ export class NasaImageSearch extends LitElement {
     super();
     this.images = [];
     this.searchTerm = '';
+    this.t = {
+      pageNumber: 'Pages',
+      searchBox: 'Search... (ex. Moon, Stars...)',
+      yearStart: 'Start Year',
+      yearFinish: 'End Year',
+    };
   }
 
   updated(changedProperties) {
@@ -148,20 +182,58 @@ export class NasaImageSearch extends LitElement {
       <h2 style="text-align:center">NASA Search!</h2>
 
       <div class="center">
-        <button class="button1" @click=${this.clearFields}>Reset</button>
-        <input type="text" id="searchTerm" title="search" autofocus @keyup=${e => {
+        <button 
+          class="button1" 
+          @click=${this.clearFields}> Reset
+        </button>
+        
+        <input 
+          type="text" 
+          id="searchTerm" 
+          .placeholder="${this.t.searchBox}"
+          autofocus
+          @keyup=${e => {
           this.handleKeypress(e);
-        }}></input>
-        <button class="button2" @click=${this.updateSearchTerm} aria-label="Search Button">Search!</button>
+          }}
+          aria-label="Enter Search Term"
+        >
+        </input>
+
+        <button 
+          class="button2" 
+          @click=${this.updateSearchTerm} 
+          aria-label="Search button" > Search!
+        </button>
       </div>
 
       <div class="center">
-          <input type="number" id="searchTerm" title="number"></input>
-        <!-- <button class="forward"> </button> -->
+          <input 
+            type="number" 
+            id="yearBox"
+            .placeholder="${this.t.yearStart}"
+            title="number"
+            aria-label="Enter Starting Year"> -
+          </input>
 
-        <button class="accentcard" aria-label="Switch to Accent Card View"> </button>
-        <button class="list" aria-label="Switch to List View"> </button>
+          <input 
+            type="number" 
+            id="yearBox"
+            .placeholder="${this.t.yearFinish}"
+            title="number"
+            aria-label="Enter Ending Year">
+          </input>
+
+        <button class="accentcard" aria-label="Switch to Card View"> Card View </button>
+        <button class="list" aria-label="Switch to List View"> List View </button>
       </div>
+
+    <div class="center">
+      <input 
+          type="number" 
+          id="pageBox"
+          .placeholder="${this.t.pageNumber}">
+      </input>
+    </div>
 
       <br><br>
       ${this.images.map(
