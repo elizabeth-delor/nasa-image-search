@@ -142,6 +142,8 @@ export class NasaImageSearch extends LitElement {
     });
   }
 
+  firstUpdated() {}
+
   getData() {
     const apiURL = 'https://images-api.nasa.gov/search?media_type=image&q=';
     fetch(apiURL + this.searchTerm)
@@ -165,6 +167,13 @@ export class NasaImageSearch extends LitElement {
     this.searchTerm = '';
   }
 
+  handleKeypress(e) {
+    if (e.keyCode === 13) {
+      e.preventDefault();
+      this.updateSearchTerm();
+    }
+  }
+
   render() {
     const detailsURL = 'https://images.nasa.gov/details-';
     const imageURL = new URL('../assets/favicon-192.png', import.meta.url).href;
@@ -182,7 +191,12 @@ export class NasaImageSearch extends LitElement {
           type="text" 
           id="searchTerm" 
           .placeholder="${this.t.searchBox}"
-          autofocus>
+          autofocus
+          @keyup=${e => {
+          this.handleKeypress(e);
+          }}
+          aria-label="Enter Search Term"
+        >
         </input>
 
         <button 
@@ -237,6 +251,22 @@ export class NasaImageSearch extends LitElement {
           </a>
         `
       )}
+
+      <script>
+      var searchField = this.shadowRoot.querySelector(#searchTerm)
+
+      searchField.addEventListener("keyup", function(event) {
+        console.log("some event")
+        // Number 13 is the "Enter" key on the keyboard
+        if (event.keyCode === 13) {
+          // Cancel the default action, if needed
+          event.preventDefault();
+          // Trigger the button element with a click
+          this.shadowRoot.querySelector(".button2").click();
+          console.log("enter enter enter")
+        }
+      });
+      </script>
     `;
   }
 }
