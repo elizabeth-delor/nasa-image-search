@@ -32,6 +32,7 @@ export class NasaImageSearch extends LitElement {
 
       .button1 {
         border: none;
+        border-radius: 3px 0px 0px 3px;
         background-color: #ff7376;
         color: black;
         padding: 10px 22px;
@@ -44,6 +45,7 @@ export class NasaImageSearch extends LitElement {
 
       .button2 {
         border: none;
+        border-radius: 0px 3px 3px 0px;
         background-color: #ff7376;
         color: black;
         padding: 10px 22px;
@@ -62,10 +64,36 @@ export class NasaImageSearch extends LitElement {
       }
 
       input[type='number'] {
-        width: 10%;
-        padding: 8px 20px;
-        margin: 18px 0;
+        width: 55px;
+        padding: 8px 20px 3px;
+        margin: 20px 8px;
         display: inline-block;
+      }
+
+      .accentcard {
+        display: inline-block;
+        background-color: #ff7376;
+        border: none;
+        border-radius: 3px;
+        padding: 8px 20px;
+        margin: 20px 2px;
+        height: 30.5px;
+
+        font-size: 10px;
+        cursor: pointer;
+      }
+
+      .list {
+        display: inline-block;
+        background-color: #ff7376;
+        border: none;
+        border-radius: 3px;
+        padding: 8px 20px;
+        margin: 20px 0px;
+        height: 30.5px;
+
+        font-size: 10px;
+        cursor: pointer;
       }
 
       .center {
@@ -88,6 +116,10 @@ export class NasaImageSearch extends LitElement {
     super();
     this.images = [];
     this.searchTerm = '';
+    this.t = {
+      pageNumber: 'Pages',
+      searchBox: 'Search... (ex. Moon, Stars...)',
+    };
   }
 
   updated(changedProperties) {
@@ -138,16 +170,24 @@ export class NasaImageSearch extends LitElement {
 
       <div class="center">
         <button class="button1" @click=${this.clearFields}>Reset</button>
-        <input type="text" id="searchTerm" autofocus></input>
+        <input 
+          type="text" 
+          id="searchTerm" 
+          .placeholder="${this.t.searchBox}"
+          autofocus>
+        </input>
         <button class="button2" @click=${this.updateSearchTerm}>Search!</button>
       </div>
 
       <div class="center">
-          <input type="number" id="searchTerm"></input>
+          <input 
+            type="number" 
+            id="searchTerm"
+            .placeholder="${this.t.pageNumber}"></input>
         <!-- <button class="forward"> </button> -->
 
-        <button class="accentcard"> </button>
-        <button class="list"> </button>
+        <button class="accentcard"> Card View </button>
+        <button class="list"> List View </button>
       </div>
 
       <br><br>
