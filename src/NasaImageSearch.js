@@ -142,24 +142,25 @@ export class NasaImageSearch extends LitElement {
 
   render() {
     const detailsURL = 'https://images.nasa.gov/details-';
+    const imageURL = new URL('../assets/favicon-192.png', import.meta.url).href;
     return html`
-      <img src="../assets/favicon-192.png" alt="nasa logo" style="width:128px;height:128px;">
+      <img src="${imageURL}" alt="nasa logo" style="width:128px;height:128px;">
       <h2 style="text-align:center">NASA Search!</h2>
 
       <div class="center">
         <button class="button1" @click=${this.clearFields}>Reset</button>
-        <input type="text" id="searchTerm" autofocus @keyup=${e => {
+        <input type="text" id="searchTerm" title="search" autofocus @keyup=${e => {
           this.handleKeypress(e);
         }}></input>
-        <button class="button2" @click=${this.updateSearchTerm}>Search!</button>
+        <button class="button2" @click=${this.updateSearchTerm} aria-label="Search Button">Search!</button>
       </div>
 
       <div class="center">
-          <input type="number" id="searchTerm"></input>
+          <input type="number" id="searchTerm" title="number"></input>
         <!-- <button class="forward"> </button> -->
 
-        <button class="accentcard"> </button>
-        <button class="list"> </button>
+        <button class="accentcard" aria-label="Switch to Accent Card View"> </button>
+        <button class="list" aria-label="Switch to List View"> </button>
       </div>
 
       <br><br>
