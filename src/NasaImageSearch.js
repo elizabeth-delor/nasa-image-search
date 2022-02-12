@@ -34,6 +34,7 @@ export class NasaImageSearch extends LitElement {
 
       .button1 {
         border: none;
+        border-radius: 3px 0px 0px 3px;
         background-color: #ff7376;
         color: black;
         padding: 10px 22px;
@@ -46,6 +47,7 @@ export class NasaImageSearch extends LitElement {
 
       .button2 {
         border: none;
+        border-radius: 0px 3px 3px 0px;
         background-color: #ff7376;
         color: black;
         padding: 10px 22px;
@@ -64,10 +66,36 @@ export class NasaImageSearch extends LitElement {
       }
 
       input[type='number'] {
-        width: 10%;
-        padding: 8px 20px;
-        margin: 18px 0;
+        width: 70px;
+        padding: 8px 20px 3px;
+        margin: 20px 8px;
         display: inline-block;
+      }
+
+      .accentcard {
+        display: inline-block;
+        background-color: #ff7376;
+        border: none;
+        border-radius: 3px;
+        padding: 8px 20px;
+        margin: 20px 2px;
+        height: 30.5px;
+
+        font-size: 10px;
+        cursor: pointer;
+      }
+
+      .list {
+        display: inline-block;
+        background-color: #ff7376;
+        border: none;
+        border-radius: 3px;
+        padding: 8px 20px;
+        margin: 20px 0px;
+        height: 30.5px;
+
+        font-size: 10px;
+        cursor: pointer;
       }
 
       .center {
@@ -102,6 +130,12 @@ export class NasaImageSearch extends LitElement {
     this.page = '1';
     this.startYear = '1000';
     this.endYear = '2022';
+    this.t = {
+      pageNumber: 'Pages',
+      searchBox: 'Search... (ex. Moon, Stars...)',
+      yearStart: 'Start Year',
+      yearFinish: 'End Year',
+    };
   }
 
   updated(changedProperties) {
@@ -121,6 +155,8 @@ export class NasaImageSearch extends LitElement {
       }
     });
   }
+
+  firstUpdated() {}
 
   getData() {
     fetch(`${this.apiURL}&q=${this.searchTerm}&page=${this.page}`)
@@ -165,27 +201,76 @@ export class NasaImageSearch extends LitElement {
   clearFields() {
     this.shadowRoot.querySelector('#searchTerm').value = '';
     this.images = [];
+    this.searchTerm = '';
+  }
+
+  handleKeypress(e) {
+    if (e.keyCode === 13) {
+      e.preventDefault();
+      this.updateSearchTerm();
+    }
   }
 
   render() {
     const detailsURL = 'https://images.nasa.gov/details-';
+    const imageURL = new URL('../assets/favicon-192.png', import.meta.url).href;
     return html`
-      <img src="../assets/favicon-192.png" alt="nasa logo" style="width:128px;height:128px;">
+      <img src="${imageURL}" alt="nasa logo" style="width:128px;height:128px;">
       <h2 style="text-align:center">NASA Search!</h2>
 
       <div class="center">
-        <button class="button1" @click=${this.clearFields}>Reset</button>
-        <input type="text" id="searchTerm" autofocus></input>
-        <button class="button2" @click=${this.updateSearchTerm}>Search!</button>
+        <button 
+          class="button1" 
+          @click=${this.clearFields}> Reset
+        </button>
+        
+        <input 
+          type="text" 
+          id="searchTerm" 
+          .placeholder="${this.t.searchBox}"
+          autofocus
+          @keyup=${e => {
+            this.handleKeypress(e);
+          }}
+          aria-label="Enter Search Term"
+        >
+        </input>
+
+        <button 
+          class="button2" 
+          @click=${this.updateSearchTerm} 
+          aria-label="Search button" > Search!
+        </button>
       </div>
 
       <div class="center">
-          <input type="number" id="searchTerm"></input>
-        <!-- <button class="forward"> </button> -->
+          <input 
+            type="number" 
+            id="yearBox"
+            .placeholder="${this.t.yearStart}"
+            title="number"
+            aria-label="Enter Starting Year"> -
+          </input>
 
-        <button class="accentcard"> </button>
-        <button class="list"> </button>
+          <input 
+            type="number" 
+            id="yearBox"
+            .placeholder="${this.t.yearFinish}"
+            title="number"
+            aria-label="Enter Ending Year">
+          </input>
+
+        <button class="accentcard" aria-label="Switch to Card View"> Card View </button>
+        <button class="list" aria-label="Switch to List View"> List View </button>
       </div>
+
+    <div class="center">
+      <input 
+          type="number" 
+          id="pageBox"
+          .placeholder="${this.t.pageNumber}">
+      </input>
+    </div>
 
       <br><br>
       ${this.images.map(
@@ -209,6 +294,22 @@ export class NasaImageSearch extends LitElement {
           </a>
         `
       )}
+
+      <script>
+      var searchField = this.shadowRoot.querySelector(#searchTerm)
+
+      searchField.addEventListener("keyup", function(event) {
+        console.log("some event")
+        // Number 13 is the "Enter" key on the keyboard
+        if (event.keyCode === 13) {
+          // Cancel the default action, if needed
+          event.preventDefault();
+          // Trigger the button element with a click
+          this.shadowRoot.querySelector(".button2").click();
+          console.log("enter enter enter")
+        }
+      });
+      </script>
     `;
   }
 }
