@@ -2,8 +2,6 @@
 import { html, css, LitElement } from 'lit';
 import '@lrnwebcomponents/accent-card';
 
-// TODO: Connect startYear & endYear logic to html elements and then to api call
-// TODO: Fix photographer/secondary_creator setup
 export class NasaImageSearch extends LitElement {
   static get styles() {
     return css`
@@ -134,7 +132,7 @@ export class NasaImageSearch extends LitElement {
       pageNumber: 'Pages',
       searchBox: 'Search... (ex. Moon, Stars...)',
       yearStart: 'Start Year',
-      yearFinish: 'End Year',
+      yearEnd: 'End Year',
     };
   }
 
@@ -159,7 +157,9 @@ export class NasaImageSearch extends LitElement {
   firstUpdated() {}
 
   getData() {
-    fetch(`${this.apiURL}&q=${this.searchTerm}&page=${this.page}`)
+    fetch(
+      `${this.apiURL}&q=${this.searchTerm}&page=${this.page}&year_start=${this.startYear}&year_end=${this.endYear}`
+    )
       .then(response => response.json())
       .then(data => {
         this.images = [];
@@ -181,25 +181,28 @@ export class NasaImageSearch extends LitElement {
 
   updateSearchTerm() {
     this.searchTerm = this.shadowRoot.querySelector('#searchTerm').value;
+    this.getData();
   }
 
   updateStartYear() {
-    console.log(this.startYear);
-    // let newStart = this.shadowRoot.querySelector('#startYear').value;
-    // conditional that checks newStart > 1000
-    // this.startYear = newStart
+    const newStart = this.shadowRoot.querySelector('#yearStart').value;
+    this.startYear = newStart > 1000 ? newStart : this.startYear;
   }
 
   updateEndYear() {
-    // conditional that checks shadowRoot for value > 1899
-    console.log(this.endYear);
-    // let newEnd = this.shadowRoot.querySelector('#endYear').value;
-    // conditional that checks newEnd > 1000
-    // this.startYear = newEnd
+    const newEnd = this.shadowRoot.querySelector('#yearEnd').value;
+    this.endYear = newEnd > 1900 ? newEnd : this.endYear;
   }
 
   clearFields() {
     this.shadowRoot.querySelector('#searchTerm').value = '';
+    this.startYear = '1000';
+    this.shadowRoot.querySelector('#yearStart').value = '';
+    this.EndYear = '2022';
+    this.shadowRoot.querySelector('#yearEnd').value = '';
+    this.page = '1';
+    this.shadowRoot.querySelector('#pageInput').value = this.page;
+
     this.images = [];
     this.searchTerm = '';
   }
@@ -211,68 +214,84 @@ export class NasaImageSearch extends LitElement {
     }
   }
 
+  _updatePage() {
+    if (this.shadowRoot.querySelector('#pageInput').value > 0) {
+      this.page = this.shadowRoot.querySelector('#pageInput').value;
+    }
+  }
+
   render() {
     const detailsURL = 'https://images.nasa.gov/details-';
     const imageURL = new URL('../assets/favicon-192.png', import.meta.url).href;
     return html`
-      <img src="${imageURL}" alt="nasa logo" style="width:128px;height:128px;">
+      <img
+        src="${imageURL}"
+        alt="nasa logo"
+        style="width:128px;height:128px;"
+      />
       <h2 style="text-align:center">NASA Search!</h2>
 
       <div class="center">
-        <button 
-          class="button1" 
-          @click=${this.clearFields}> Reset
-        </button>
-        
-        <input 
-          type="text" 
-          id="searchTerm" 
+        <button class="button1" @click=${this.clearFields}>Reset</button>
+
+        <input
+          type="text"
+          id="searchTerm"
           .placeholder="${this.t.searchBox}"
           autofocus
           @keyup=${e => {
             this.handleKeypress(e);
           }}
           aria-label="Enter Search Term"
-        >
-        </input>
+        />
 
-        <button 
-          class="button2" 
-          @click=${this.updateSearchTerm} 
-          aria-label="Search button" > Search!
+        <button
+          class="button2"
+          @click=${this.updateSearchTerm}
+          aria-label="Search button"
+        >
+          Search!
         </button>
       </div>
 
       <div class="center">
-          <input 
-            type="number" 
-            id="yearBox"
-            .placeholder="${this.t.yearStart}"
-            title="number"
-            aria-label="Enter Starting Year"> -
-          </input>
+        <input
+          type="number"
+          id="yearStart"
+          .placeholder="${this.t.yearStart}"
+          title="number"
+          @change=${this.updateStartYear}
+          aria-label="Enter Starting Year"
+        />
+        -
+        <input
+          type="number"
+          id="yearEnd"
+          .placeholder="${this.t.yearEnd}"
+          title="number"
+          @change=${this.updateEndYear}
+          aria-label="Enter Ending Year"
+        />
 
-          <input 
-            type="number" 
-            id="yearBox"
-            .placeholder="${this.t.yearFinish}"
-            title="number"
-            aria-label="Enter Ending Year">
-          </input>
-
-        <button class="accentcard" aria-label="Switch to Card View"> Card View </button>
-        <button class="list" aria-label="Switch to List View"> List View </button>
+        <button class="accentcard" aria-label="Switch to Card View">
+          Card View
+        </button>
+        <button class="list" aria-label="Switch to List View">List View</button>
       </div>
 
-    <div class="center">
-      <input 
-          type="number" 
-          id="pageBox"
-          .placeholder="${this.t.pageNumber}">
-      </input>
-    </div>
+      <div class="center">
+        <label for="page">Page Number: </label>
+        <input
+          type="number"
+          id="pageInput"
+          min="1"
+          value="1"
+          class="pageInput"
+          @change="${this._updatePage}"
+        />
+      </div>
 
-      <br><br>
+      <br /><br />
       ${this.images.map(
         item => html`
           <a href="${detailsURL}${item.data[0].nasa_id}" target="_blank">
@@ -296,19 +315,19 @@ export class NasaImageSearch extends LitElement {
       )}
 
       <script>
-      var searchField = this.shadowRoot.querySelector(#searchTerm)
+        var searchField = this.shadowRoot.querySelector(#searchTerm)
 
-      searchField.addEventListener("keyup", function(event) {
-        console.log("some event")
-        // Number 13 is the "Enter" key on the keyboard
-        if (event.keyCode === 13) {
-          // Cancel the default action, if needed
-          event.preventDefault();
-          // Trigger the button element with a click
-          this.shadowRoot.querySelector(".button2").click();
-          console.log("enter enter enter")
-        }
-      });
+        searchField.addEventListener("keyup", function(event) {
+          console.log("some event")
+          // Number 13 is the "Enter" key on the keyboard
+          if (event.keyCode === 13) {
+            // Cancel the default action, if needed
+            event.preventDefault();
+            // Trigger the button element with a click
+            this.shadowRoot.querySelector(".button2").click();
+            console.log("enter enter enter")
+          }
+        });
       </script>
     `;
   }
