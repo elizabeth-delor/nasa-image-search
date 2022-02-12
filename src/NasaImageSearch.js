@@ -102,6 +102,10 @@ export class NasaImageSearch extends LitElement {
         align-items: center;
         height: 40px;
       }
+
+      .photoCredit {
+        font-style: italic;
+      }
     `;
   }
 
@@ -109,18 +113,26 @@ export class NasaImageSearch extends LitElement {
     return {
       searchTerm: { type: String, reflect: true },
       images: { type: Array },
+      apiURL: { type: String },
+      page: { type: String, reflect: true },
+      startYear: { type: String },
+      endYear: { type: String },
     };
   }
 
   constructor() {
     super();
     this.images = [];
+    this.apiURL = 'https://images-api.nasa.gov/search?media_type=image';
     this.searchTerm = '';
+    this.page = '1';
+    this.startYear = '1000';
+    this.endYear = '2022';
     this.t = {
       pageNumber: 'Pages',
       searchBox: 'Search... (ex. Moon, Stars...)',
       yearStart: 'Start Year',
-      yearFinish: 'End Year',
+      yearEnd: 'End Year',
     };
   }
 
@@ -145,13 +157,23 @@ export class NasaImageSearch extends LitElement {
   firstUpdated() {}
 
   getData() {
-    const apiURL = 'https://images-api.nasa.gov/search?media_type=image&q=';
-    fetch(apiURL + this.searchTerm)
+    fetch(
+      `${this.apiURL}&q=${this.searchTerm}&page=${this.page}&year_start=${this.startYear}&year_end=${this.endYear}`
+    )
       .then(response => response.json())
       .then(data => {
         this.images = [];
         const imageCollection = new Array(data.collection.items);
         for (let i = 0; i < imageCollection[0].length; i += 1) {
+          // next three lines take photographer info from secondary_creator and photographer fields and put into one uniform variable
+          let photographerInfo = imageCollection[0][i].data[0].secondary_creator
+            ? imageCollection[0][i].data[0].secondary_creator
+            : 'unknown';
+          photographerInfo = imageCollection[0][i].data[0].photographer
+            ? imageCollection[0][i].data[0].photographer
+            : photographerInfo;
+          imageCollection[0][i].data[0].photographerInfo = photographerInfo;
+
           this.images.push(imageCollection[0][i]);
         }
       });
@@ -159,10 +181,28 @@ export class NasaImageSearch extends LitElement {
 
   updateSearchTerm() {
     this.searchTerm = this.shadowRoot.querySelector('#searchTerm').value;
+    this.getData();
+  }
+
+  updateStartYear() {
+    const newStart = this.shadowRoot.querySelector('#yearStart').value;
+    this.startYear = newStart > 1000 ? newStart : this.startYear;
+  }
+
+  updateEndYear() {
+    const newEnd = this.shadowRoot.querySelector('#yearEnd').value;
+    this.endYear = newEnd > 1900 ? newEnd : this.endYear;
   }
 
   clearFields() {
     this.shadowRoot.querySelector('#searchTerm').value = '';
+    this.startYear = '1000';
+    this.shadowRoot.querySelector('#yearStart').value = '';
+    this.EndYear = '2022';
+    this.shadowRoot.querySelector('#yearEnd').value = '';
+    this.page = '1';
+    this.shadowRoot.querySelector('#pageInput').value = this.page;
+
     this.images = [];
     this.searchTerm = '';
   }
@@ -174,68 +214,84 @@ export class NasaImageSearch extends LitElement {
     }
   }
 
+  _updatePage() {
+    if (this.shadowRoot.querySelector('#pageInput').value > 0) {
+      this.page = this.shadowRoot.querySelector('#pageInput').value;
+    }
+  }
+
   render() {
     const detailsURL = 'https://images.nasa.gov/details-';
     const imageURL = new URL('../assets/favicon-192.png', import.meta.url).href;
     return html`
-      <img src="${imageURL}" alt="nasa logo" style="width:128px;height:128px;">
+      <img
+        src="${imageURL}"
+        alt="nasa logo"
+        style="width:128px;height:128px;"
+      />
       <h2 style="text-align:center">NASA Search!</h2>
 
       <div class="center">
-        <button 
-          class="button1" 
-          @click=${this.clearFields}> Reset
-        </button>
-        
-        <input 
-          type="text" 
-          id="searchTerm" 
+        <button class="button1" @click=${this.clearFields}>Reset</button>
+
+        <input
+          type="text"
+          id="searchTerm"
           .placeholder="${this.t.searchBox}"
           autofocus
           @keyup=${e => {
-          this.handleKeypress(e);
+            this.handleKeypress(e);
           }}
           aria-label="Enter Search Term"
-        >
-        </input>
+        />
 
-        <button 
-          class="button2" 
-          @click=${this.updateSearchTerm} 
-          aria-label="Search button" > Search!
+        <button
+          class="button2"
+          @click=${this.updateSearchTerm}
+          aria-label="Search button"
+        >
+          Search!
         </button>
       </div>
 
       <div class="center">
-          <input 
-            type="number" 
-            id="yearBox"
-            .placeholder="${this.t.yearStart}"
-            title="number"
-            aria-label="Enter Starting Year"> -
-          </input>
+        <input
+          type="number"
+          id="yearStart"
+          .placeholder="${this.t.yearStart}"
+          title="number"
+          @change=${this.updateStartYear}
+          aria-label="Enter Starting Year"
+        />
+        -
+        <input
+          type="number"
+          id="yearEnd"
+          .placeholder="${this.t.yearEnd}"
+          title="number"
+          @change=${this.updateEndYear}
+          aria-label="Enter Ending Year"
+        />
 
-          <input 
-            type="number" 
-            id="yearBox"
-            .placeholder="${this.t.yearFinish}"
-            title="number"
-            aria-label="Enter Ending Year">
-          </input>
-
-        <button class="accentcard" aria-label="Switch to Card View"> Card View </button>
-        <button class="list" aria-label="Switch to List View"> List View </button>
+        <button class="accentcard" aria-label="Switch to Card View">
+          Card View
+        </button>
+        <button class="list" aria-label="Switch to List View">List View</button>
       </div>
 
-    <div class="center">
-      <input 
-          type="number" 
-          id="pageBox"
-          .placeholder="${this.t.pageNumber}">
-      </input>
-    </div>
+      <div class="center">
+        <label for="page">Page Number: </label>
+        <input
+          type="number"
+          id="pageInput"
+          min="1"
+          value="1"
+          class="pageInput"
+          @change="${this._updatePage}"
+        />
+      </div>
 
-      <br><br>
+      <br /><br />
       ${this.images.map(
         item => html`
           <a href="${detailsURL}${item.data[0].nasa_id}" target="_blank">
@@ -246,26 +302,32 @@ export class NasaImageSearch extends LitElement {
               style="max-width:300%;"
             >
               <div slot="heading">${item.data[0].title}</div>
-              <div slot="content">${item.data[0].description}</div>
+              <div slot="content">
+                ${item.data[0].description}
+                <br />
+                <p class="photoCredit">
+                  Photographed by: ${item.data[0].photographerInfo}
+                </p>
+              </div>
             </accent-card>
           </a>
         `
       )}
 
       <script>
-      var searchField = this.shadowRoot.querySelector(#searchTerm)
+        var searchField = this.shadowRoot.querySelector(#searchTerm)
 
-      searchField.addEventListener("keyup", function(event) {
-        console.log("some event")
-        // Number 13 is the "Enter" key on the keyboard
-        if (event.keyCode === 13) {
-          // Cancel the default action, if needed
-          event.preventDefault();
-          // Trigger the button element with a click
-          this.shadowRoot.querySelector(".button2").click();
-          console.log("enter enter enter")
-        }
-      });
+        searchField.addEventListener("keyup", function(event) {
+          console.log("some event")
+          // Number 13 is the "Enter" key on the keyboard
+          if (event.keyCode === 13) {
+            // Cancel the default action, if needed
+            event.preventDefault();
+            // Trigger the button element with a click
+            this.shadowRoot.querySelector(".button2").click();
+            console.log("enter enter enter")
+          }
+        });
       </script>
     `;
   }
