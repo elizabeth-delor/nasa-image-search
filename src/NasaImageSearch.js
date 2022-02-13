@@ -117,6 +117,8 @@ export class NasaImageSearch extends LitElement {
       page: { type: String, reflect: true },
       startYear: { type: String },
       endYear: { type: String },
+      view: { type: String, reflect: true },
+      loadData: { type: Boolean, reflect: true, attribute: 'load' },
     };
   }
 
@@ -134,10 +136,16 @@ export class NasaImageSearch extends LitElement {
       yearStart: 'Start Year',
       yearEnd: 'End Year',
     };
+    this.loadData = false;
+    this.view = 'accent-card';
   }
 
   updated(changedProperties) {
     changedProperties.forEach((oldValue, propName) => {
+      if (propName === 'loadData' && this[propName]) {
+        console.log('load data changed');
+        this.getNASAData();
+      }
       if (propName === 'searchTerm' && this[propName]) {
         this.getData();
       } else if (propName === 'images') {
@@ -220,6 +228,14 @@ export class NasaImageSearch extends LitElement {
     }
   }
 
+  changeViewCard() {
+    this.view = 'accent-card';
+  }
+
+  changeViewList() {
+    this.view = 'list';
+  }
+
   render() {
     const detailsURL = 'https://images.nasa.gov/details-';
     const imageURL = new URL('../assets/favicon-192.png', import.meta.url).href;
@@ -273,10 +289,20 @@ export class NasaImageSearch extends LitElement {
           aria-label="Enter Ending Year"
         />
 
-        <button class="accentcard" aria-label="Switch to Card View">
+        <button
+          class="accentcard"
+          aria-label="Switch to Card View"
+          @click=${this.changeViewCard}
+        >
           Card View
         </button>
-        <button class="list" aria-label="Switch to List View">List View</button>
+        <button
+          class="list"
+          aria-label="Switch to List View"
+          @click=${this.changeViewList}
+        >
+          List View
+        </button>
       </div>
 
       <div class="center">
@@ -292,28 +318,42 @@ export class NasaImageSearch extends LitElement {
       </div>
 
       <br /><br />
-      ${this.images.map(
-        item => html`
-          <a href="${detailsURL}${item.data[0].nasa_id}" target="_blank">
-            <accent-card
-              image-src=${item.links[0].href}
-              accent-color="red"
-              horizontal
-              style="max-width:300%;"
-            >
-              <div slot="heading">${item.data[0].title}</div>
-              <div slot="content">
-                ${item.data[0].description}
-                <br />
-                <p class="photoCredit">
-                  Photographed by: ${item.data[0].photographerInfo}
-                </p>
-              </div>
-            </accent-card>
-          </a>
-        `
-      )}
-
+      ${this.view === `list`
+        ? html`
+            <ul>
+              ${this.images.map(
+                item => html`
+                  <li>
+                    <a href="${item.links[0].href}"> ${item.links[0].href} </a>
+                    - ${item.data[0].title} - ${item.data[0].description}
+                  </li>
+                `
+              )}
+            </ul>
+          `
+        : html`
+            ${this.images.map(
+              item => html`
+                <a href="${detailsURL}${item.data[0].nasa_id}" target="_blank">
+                  <accent-card
+                    image-src=${item.links[0].href}
+                    accent-color="red"
+                    horizontal
+                    style="max-width:300%;"
+                  >
+                    <div slot="heading">${item.data[0].title}</div>
+                    <div slot="content">
+                      ${item.data[0].description}
+                      <br />
+                      <p class="photoCredit">
+                        Photographed by: ${item.data[0].photographerInfo}
+                      </p>
+                    </div>
+                  </accent-card>
+                </a>
+              `
+            )}
+          `}
       <script>
         var searchField = this.shadowRoot.querySelector(#searchTerm)
 
